@@ -1,3 +1,5 @@
+/* eslint-disable no-dupe-keys */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -28,17 +30,18 @@ const ProductList = () => {
     const { fetchCartCount } = useContext(CartContext);
 
     const pageSize = 8;
-    const API_URL = 'http://localhost:5000';
+    const API_URL = process.env.REACT_APP_API_URL;
+    const API_UPLOAD = process.env.React_APP_API_UPLOAD;
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get(`${API_URL}/api/categories`)
+        axios.get(`${API_URL}/categories`)
             .then(res => setCategories(res.data.data))
             .catch(() => message.error('Không tải được danh mục'));
     }, []);
 
     useEffect(() => {
-        axios.get(`${API_URL}/api/products/with-sizes`)
+        axios.get(`${API_URL}/products/with-sizes`)
             .then(res => {
                 const filtered = res.data.data.filter(p => p.size_name === 'S');
                 setProducts(filtered);
@@ -72,7 +75,7 @@ const ProductList = () => {
                 quantity: 1
             };
 
-            const response = await axios.post(`${API_URL}/api/carts/add`, payload);
+            const response = await axios.post(`${API_URL}/carts/add`, payload);
 
             if (response.status === 200) {
                 message.success('Đã thêm sản phẩm vào giỏ hàng');
@@ -165,7 +168,7 @@ const ProductList = () => {
                                                     product.image ? (
                                                         <Image
                                                             alt={product.product_name}
-                                                            src={`${API_URL}/${product.image}`}
+                                                            src={`${API_UPLOAD}/${product.image}`}
                                                             style={{
                                                                 height: 200,
                                                                 objectFit: 'cover',

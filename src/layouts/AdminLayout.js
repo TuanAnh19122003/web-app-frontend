@@ -23,6 +23,7 @@ const AdminLayout = () => {
 
     const navigate = useNavigate();
     const location = useLocation();
+    const API_URL = process.env.React_APP_API_UPLOAD;
 
     const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
 
@@ -237,7 +238,7 @@ const AdminLayout = () => {
                                 textOverflow: 'ellipsis',
                             }}
                         >
-                            <Avatar src={`http://localhost:5000/${user.image}`} size={36} />
+                            <Avatar src={`${API_URL}/${user.image}`} size={36} />
                             <span style={{ fontWeight: 500 }}>{user.lastname} {user.firstname}</span>
                         </div>
 

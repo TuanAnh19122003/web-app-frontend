@@ -17,12 +17,12 @@ const ProductDetail = () => {
     const [selectedSize, setSelectedSize] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const API_URL = 'http://localhost:5000';
+    const API_URL = process.env.REACT_APP_API_URL;
     const { fetchCartCount } = useContext(CartContext);
     const user = JSON.parse(localStorage.getItem('user'));
 
     useEffect(() => {
-        axios.get(`${API_URL}/api/products/with-sizes`)
+        axios.get(`${API_URL}/products/with-sizes`)
             .then(res => {
                 const productSizes = res.data.data.filter(p => p.product_id === parseInt(id));
                 if (productSizes.length > 0) {
@@ -34,6 +34,7 @@ const ProductDetail = () => {
             })
             .catch(() => message.error('Lỗi khi tải dữ liệu sản phẩm.'))
             .finally(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     const formattedPrice = (price) => Number(price).toLocaleString('vi-VN') + ' đ';
@@ -50,7 +51,7 @@ const ProductDetail = () => {
         }
 
         try {
-            await axios.post(`${API_URL}/api/carts/add`, {
+            await axios.post(`${API_URL}/carts/add`, {
                 userId: user.id,
                 productId: selectedSize.product_id,
                 sizeId: selectedSize.size_id,

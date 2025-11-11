@@ -4,6 +4,8 @@ import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 import { formatCurrency } from '../../../utils/helpers';
 
 const ProductList = ({ data, onEdit, onDelete, onView, pagination, onPageChange, categories, discounts }) => {
+    const API_URL = process.env.React_APP_API_UPLOAD;
+
     const columns = [
         {
             title: "STT",
@@ -20,7 +22,7 @@ const ProductList = ({ data, onEdit, onDelete, onView, pagination, onPageChange,
             render: (filename) =>
                 filename ? (
                     <img
-                        src={`http://localhost:5000/${filename}`}
+                        src={`${API_URL}/${filename}`}
                         alt="product"
                         style={{
                             width: 100,

@@ -17,6 +17,7 @@ const Profile = () => {
     const navigate = useNavigate();
 
     const API_URL = process.env.REACT_APP_API_URL;
+    const REACT_APP_API_UPLOAD = process.env.REACT_APP_API_UPLOAD;
     const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
 
     useEffect(() => {
@@ -117,7 +118,7 @@ const Profile = () => {
                         <Col span={8} style={{ textAlign: 'center' }}>
                             {(previewImage || userData.image) ? (
                                 <img
-                                    src={previewImage || `http://localhost:5000/${userData.image}`}
+                                    src={previewImage || `${REACT_APP_API_UPLOAD}/${userData.image}`}
                                     alt="avatar"
                                     style={{
                                         width: '100%',

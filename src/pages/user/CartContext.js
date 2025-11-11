@@ -4,12 +4,13 @@ export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
     const [cartItemCount, setCartItemCount] = useState(0);
+    const API_URL = process.env.REACT_APP_API_URL;
 
     const fetchCartCount = async () => {
         const user = JSON.parse(localStorage.getItem('user'));
         if (user) {
             try {
-                const res = await fetch(`http://localhost:5000/api/carts/${user.id}`);
+                const res = await fetch(`${API_URL}/carts/${user.id}`);
                 const data = await res.json();
                 const count = data?.data?.reduce((sum, item) => sum + item.quantity, 0) || 0;
                 setCartItemCount(count);

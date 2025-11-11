@@ -16,7 +16,7 @@ import { CartContext } from './CartContext';
 import AddressModal from '../../components/AddressModal';
 
 const { Title } = Typography;
-const API_URL = 'http://localhost:5000';
+const API_URL = process.env.REACT_APP_API_URL;
 
 const Order = () => {
     const [cartItems, setCartItems] = useState([]);
@@ -46,7 +46,7 @@ const Order = () => {
         if (!userId) return message.warning('Bạn cần đăng nhập');
         setLoading(true);
         try {
-            const res = await axios.get(`${API_URL}/api/carts/${userId}`);
+            const res = await axios.get(`${API_URL}/carts/${userId}`);
             setCartItems(res.data.data);
         } catch {
             message.error('Không thể tải giỏ hàng');
@@ -69,7 +69,7 @@ const Order = () => {
 
             const totalPrice = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-            const res = await axios.post(`${API_URL}/api/orders`, {
+            const res = await axios.post(`${API_URL}/orders`, {
                 userId,
                 items,
                 totalPrice,
@@ -82,7 +82,7 @@ const Order = () => {
                 return window.location.href = res.data.approveUrl;
             }
 
-            await axios.delete(`${API_URL}/api/carts/clear/${userId}`);
+            await axios.delete(`${API_URL}/carts/clear/${userId}`);
             fetchCartCount();
             message.success('Đặt hàng thành công!');
             navigate('/payment-success');

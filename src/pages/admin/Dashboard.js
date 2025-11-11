@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import {
     Card, Col, Row, Table, Typography, Tag, message, Button
@@ -17,19 +18,19 @@ const Dashboard = () => {
     const [categories, setCategories] = useState([]);
     const [orders, setOrders] = useState([]);
 
-    const API_URL = 'http://localhost:5000';
+    const API_URL = process.env.REACT_APP_API_URL;
 
     useEffect(() => {
         const fetchData = () => {
-            axios.get(`${API_URL}/api/products/with-sizes`)
+            axios.get(`${API_URL}/products/with-sizes`)
                 .then(res => setProducts(res.data.data.filter(p => p.size_name === 'S')))
                 .catch(() => message.error('Không tải được danh sách sản phẩm'));
 
-            axios.get(`${API_URL}/api/categories`)
+            axios.get(`${API_URL}/categories`)
                 .then(res => setCategories(res.data.data))
                 .catch(() => message.error('Không tải được danh mục'));
 
-            axios.get(`${API_URL}/api/orders`)
+            axios.get(`${API_URL}/orders`)
                 .then(res => setOrders(res.data.data || []))
                 .catch(() => message.error('Không tải được đơn hàng'));
         };
@@ -57,7 +58,6 @@ const Dashboard = () => {
     });
 
     const revenueData = Object.keys(revenueByMonth).map(key => ({ month: key, revenue: revenueByMonth[key] }));
-    const orderData = Object.keys(orderByMonth).map(key => ({ month: key, orders: orderByMonth[key] }));
     const statusData = Object.keys(statusCounts).map((status, i) => ({
         name: status.toUpperCase(),
         value: statusCounts[status],

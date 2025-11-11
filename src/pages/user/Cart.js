@@ -7,7 +7,7 @@ import { CartContext } from './CartContext';
 import { useNavigate } from 'react-router-dom';
 
 const { Title, Text } = Typography;
-const API_URL = 'http://localhost:5000';
+const API_URL = process.env.React_APP_API_UPLOAD;
 
 
 const CartPage = () => {
@@ -33,6 +33,7 @@ const CartPage = () => {
 
     useEffect(() => {
         fetchCart();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleQuantityChange = async (value, cartItemId) => {

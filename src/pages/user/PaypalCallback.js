@@ -1,9 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { message, Spin } from 'antd';
 
-const API_URL = 'http://localhost:5000';
+const API_URL = process.env.REACT_APP_API_URL;
 
 const PaypalCallback = () => {
     const [searchParams] = useSearchParams();
@@ -13,9 +14,9 @@ const PaypalCallback = () => {
     useEffect(() => {
         const capturePayment = async () => {
             try {
-                const res = await axios.get(`${API_URL}/api/paypal/capture?orderId=${orderId}`);
+                const res = await axios.get(`${API_URL}/paypal/capture?orderId=${orderId}`);
                 if (res.data.success) {
-                    await axios.delete(`${API_URL}/api/carts/clear/${res.data.data.userId}`);
+                    await axios.delete(`${API_URL}/carts/clear/${res.data.data.userId}`);
                     message.success('Thanh toán PayPal thành công!');
                     navigate('/payment-success');
                 } else {
