@@ -31,7 +31,6 @@ const ProductList = () => {
 
     const pageSize = 8;
     const API_URL = process.env.REACT_APP_API_URL;
-    const API_UPLOAD = process.env.React_APP_API_UPLOAD;
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -168,7 +167,7 @@ const ProductList = () => {
                                                     product.image ? (
                                                         <Image
                                                             alt={product.product_name}
-                                                            src={`${API_UPLOAD}/${product.image}`}
+                                                            src={`${product.image}`}
                                                             style={{
                                                                 height: 200,
                                                                 objectFit: 'cover',

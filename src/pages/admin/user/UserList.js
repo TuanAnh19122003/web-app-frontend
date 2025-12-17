@@ -21,7 +21,7 @@ const UserList = ({ data, onEdit, onDelete, onView, pagination, onPageChange, ro
             render: (filename) =>
                 filename ? (
                     <img
-                        src={`http://localhost:5000/${filename}`}
+                        src={`${filename}`}
                         alt="avatar"
                         style={{ width: 120, height: 120, objectFit: "cover", borderRadius: 10, border: "1px solid #ccc" }}
                     />

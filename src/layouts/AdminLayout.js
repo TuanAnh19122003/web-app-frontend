@@ -237,7 +237,7 @@ const AdminLayout = () => {
                                 textOverflow: 'ellipsis',
                             }}
                         >
-                            <Avatar src={`http://localhost:5000/${user.image}`} size={36} />
+                            <Avatar src={`${user.image}`} size={36} />
                             <span style={{ fontWeight: 500 }}>{user.lastname} {user.firstname}</span>
                         </div>
 

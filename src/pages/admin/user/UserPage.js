@@ -201,7 +201,7 @@ const UserPage = () => {
                         <Descriptions.Item label="Email">{viewingUser.email}</Descriptions.Item>
                         <Descriptions.Item label="Ảnh đại diện">
                             {viewingUser.image ? (
-                                <img src={`http://localhost:5000/${viewingUser.image}`} alt="avatar" style={{ width: 100, height: 100, objectFit: 'contain', borderRadius: 10 }} />
+                                <img src={`${viewingUser.image}`} alt="avatar" style={{ width: 100, height: 100, objectFit: 'contain', borderRadius: 10 }} />
                             ) : (
                                 <span style={{ color: '#aaa' }}>Không có</span>
                             )}

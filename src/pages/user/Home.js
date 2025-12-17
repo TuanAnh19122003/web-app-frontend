@@ -12,7 +12,6 @@ const Home = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const API_UPLOAD_URL = process.env.REACT_APP_API_UPLOAD;
 
     const fetchCategory = async () => {
         try {
@@ -102,7 +101,7 @@ const Home = () => {
                                     product.image ? (
                                         <img
                                             alt={product.name}
-                                            src={`${API_UPLOAD_URL}/${product.image}`}
+                                            src={`${product.image}`}
                                             style={{ height: 180, objectFit: 'cover' }}
                                         />
                                     ) : (

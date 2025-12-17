@@ -95,7 +95,7 @@ const ProductDetail = () => {
                     >
                         {selectedSize.image ? (
                             <Image
-                                src={`${API_URL}/${selectedSize.image}`}
+                                src={`${selectedSize.image}`}
                                 alt={selectedSize.product_name}
                                 style={{
                                     width: '100%',

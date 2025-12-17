@@ -72,15 +72,16 @@ const ProductPage = () => {
         }
     };
 
-    const handleSearch = (value) => {
-        setSearch(value);
-        fetchData(1, pagination.pageSize, value);
-    };
+    // const handleSearch = (value) => {
+    //     setSearch(value);
+    //     fetchData(1, pagination.pageSize, value);
+    // };
 
     useEffect(() => {
         fetchCategory();
         fetchData();
         fetchDiscount();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
 
@@ -229,7 +230,7 @@ const ProductPage = () => {
                         </Descriptions.Item>
                         <Descriptions.Item label="Ảnh">
                             {viewingProduct.image ? (
-                                <img src={`http://localhost:5000/${viewingProduct.image}`} alt="product" style={{ width: 100, height: 100, objectFit: 'contain', borderRadius: 10 }} />
+                                <img src={`${viewingProduct.image}`} alt="product" style={{ width: 100, height: 100, objectFit: 'contain', borderRadius: 10 }} />
                             ) : (
                                 <span style={{ color: '#aaa' }}>Không có</span>
                             )}

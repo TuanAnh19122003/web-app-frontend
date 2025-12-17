@@ -110,7 +110,7 @@ const UserLayout = () => {
     }
 
     const userMenu = { items: menuItems };
-    const avatarUrl = user?.image ? `http://localhost:5000/${user.image}` : null;
+    const avatarUrl = user?.image ? `${user.image}` : null;
 
     return (
         <Layout style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
