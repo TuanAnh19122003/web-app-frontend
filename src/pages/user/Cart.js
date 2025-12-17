@@ -7,7 +7,7 @@ import { CartContext } from './CartContext';
 import { useNavigate } from 'react-router-dom';
 
 const { Title, Text } = Typography;
-const API_URL = process.env.React_APP_API_UPLOAD;
+const API_URL = process.env.REACT_APP_API_URL;
 
 
 const CartPage = () => {
@@ -19,21 +19,34 @@ const CartPage = () => {
     const navigate = useNavigate();
 
     const fetchCart = async () => {
-        if (!userId) return message.warning('Bạn cần đăng nhập để xem giỏ hàng');
+        if (!userId) {
+            message.warning('Bạn cần đăng nhập để xem giỏ hàng');
+            return;
+        }
+
         setLoading(true);
         try {
-            const res = await axios.get(`${API_URL}/api/carts/${userId}`);
-            setCartItems(res.data.data);
+            const res = await axios.get(`${API_URL}/carts/${userId}`);
+
+            const items = Array.isArray(res.data?.data?.items)
+                ? res.data.data.items
+                : [];
+
+            setCartItems(items);
             fetchCartCount();
+
+            console.log('Cart items:', items);
         } catch (err) {
             message.error('Không thể tải giỏ hàng');
+            setCartItems([]);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     useEffect(() => {
         fetchCart();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleQuantityChange = async (value, cartItemId) => {
@@ -117,7 +130,11 @@ const CartPage = () => {
         }
     ];
 
-    const totalAmount = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const totalAmount = (cartItems ?? []).reduce(
+        (sum, item) => sum + Number(item.price) * item.quantity,
+        0
+    );
+
 
     return (
         <div style={{ padding: 24 }}>

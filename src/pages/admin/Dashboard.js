@@ -9,6 +9,7 @@ import {
 } from 'recharts';
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { formatCurrency } from '../../utils/helpers';
 
 const { Title, Text } = Typography;
 const COLORS = ['#1890ff', '#52c41a', '#faad14', '#ff4d4f'];
@@ -171,7 +172,7 @@ const Dashboard = () => {
                             {(() => {
                                 const now = new Date();
                                 const key = `${now.getMonth() + 1}/${now.getFullYear()}`;
-                                return Number(revenueByMonth[key] || 0).toLocaleString() + ' đ';
+                                return formatCurrency(Number(revenueByMonth[key] || 0));
                             })()}
                         </Text>
                     </Card>
@@ -183,7 +184,7 @@ const Dashboard = () => {
                             {(() => {
                                 const now = new Date();
                                 const key = now.toLocaleDateString('vi-VN');
-                                return Number(revenueByDate[key] || 0).toLocaleString() + ' đ';
+                                return formatCurrency(Number(revenueByDate[key] || 0));
                             })()}
                         </Text>
                     </Card>

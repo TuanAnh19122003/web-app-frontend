@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { createContext, useState, useEffect } from 'react';
 
 export const CartContext = createContext();
@@ -12,7 +13,8 @@ export const CartProvider = ({ children }) => {
             try {
                 const res = await fetch(`${API_URL}/carts/${user.id}`);
                 const data = await res.json();
-                const count = data?.data?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+                const items = data?.data?.items || [];
+                const count = items.reduce((sum, item) => sum + item.quantity, 0);
                 setCartItemCount(count);
             } catch (err) {
                 console.error('Lỗi khi lấy giỏ hàng:', err);

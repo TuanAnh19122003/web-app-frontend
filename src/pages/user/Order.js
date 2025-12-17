@@ -39,20 +39,33 @@ const Order = () => {
             setPhone(user.phone || '');
         }
         fetchCart();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const fetchCart = async () => {
-        if (!userId) return message.warning('Bạn cần đăng nhập');
+        if (!userId) {
+            message.warning('Bạn cần đăng nhập');
+            return;
+        }
+
         setLoading(true);
         try {
             const res = await axios.get(`${API_URL}/carts/${userId}`);
-            setCartItems(res.data.data);
-        } catch {
+
+            const items = Array.isArray(res.data?.data?.items)
+                ? res.data.data.items
+                : [];
+
+            setCartItems(items);
+        } catch (err) {
+            console.error(err);
             message.error('Không thể tải giỏ hàng');
+            setCartItems([]);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
+
 
     const handleConfirmOrder = async () => {
         if (!address || !phone) {

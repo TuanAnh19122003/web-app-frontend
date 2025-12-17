@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Card, Spin, message } from 'antd';
 import axios from 'axios';
+import { formatCurrency } from '../../utils/helpers';
 
 const OrderHistory = () => {
     const [orders, setOrders] = useState([]);
@@ -85,7 +86,7 @@ const OrderHistory = () => {
                         <p><strong>Địa chỉ giao hàng:</strong> {order.shipping_address}</p>
                         <Table
                             columns={columns}
-                            dataSource={order.order_item.map((item) => ({
+                            dataSource={order.items.map((item) => ({
                                 key: item.id,
                                 product: item.product.name,
                                 size: item.size.name,
@@ -95,7 +96,7 @@ const OrderHistory = () => {
                             pagination={false}
                         />
                         <h3 style={{ textAlign: 'right', marginTop: '10px' }}>
-                            Tổng đơn hàng: {order.total_price.toLocaleString()} VND
+                            Tổng đơn hàng: {formatCurrency(Number(order.total_price))}
                         </h3>
                     </Card>
                 ))
