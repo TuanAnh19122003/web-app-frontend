@@ -4,7 +4,6 @@ import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 
 const UserList = ({ data, onEdit, onDelete, onView, pagination, onPageChange, roles }) => {
 
-    const API_URL = process.env.React_APP_API_UPLOAD;
 
     const columns = [
         {
@@ -22,7 +21,7 @@ const UserList = ({ data, onEdit, onDelete, onView, pagination, onPageChange, ro
             render: (filename) =>
                 filename ? (
                     <img
-                        src={`${API_URL}/${filename}`}
+                        src={`http://localhost:5000/${filename}`}
                         alt="avatar"
                         style={{ width: 120, height: 120, objectFit: "cover", borderRadius: 10, border: "1px solid #ccc" }}
                     />

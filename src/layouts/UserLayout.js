@@ -21,8 +21,6 @@ const UserLayout = () => {
     const location = useLocation();
     const [user, setUser] = useState(null);
     const { cartItemCount, fetchCartCount } = useContext(CartContext);
-    const API_URL = process.env.React_APP_API_UPLOAD;
-
     // Hàm load user từ localStorage
     const loadUser = () => {
         const storedUser = JSON.parse(localStorage.getItem('user'));
@@ -112,7 +110,7 @@ const UserLayout = () => {
     }
 
     const userMenu = { items: menuItems };
-    const avatarUrl = user?.image ? `${API_URL}/${user.image}` : null;
+    const avatarUrl = user?.image ? `http://localhost:5000/${user.image}` : null;
 
     return (
         <Layout style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
