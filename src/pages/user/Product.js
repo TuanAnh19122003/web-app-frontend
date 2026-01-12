@@ -15,7 +15,7 @@ import {
     Image,
     Pagination
 } from 'antd';
-import { ShoppingCartOutlined } from '@ant-design/icons';
+import { ShoppingCartOutlined, PictureOutlined } from '@ant-design/icons'; // Thêm icon ảnh
 import { formatCurrency } from '../../utils/helpers';
 import { CartContext } from './CartContext';
 
@@ -23,6 +23,7 @@ const { Title, Text } = Typography;
 const { Meta } = Card;
 
 const ProductList = () => {
+    // ... (Giữ nguyên các state và useEffect cũ)
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('all');
@@ -86,17 +87,55 @@ const ProductList = () => {
         }
     };
 
+    // Hàm render ảnh hoặc hình xám
+    const renderProductImage = (product) => {
+        const commonStyle = {
+            height: 200,
+            width: '100%',
+            objectFit: 'cover',
+            filter: product.is_active === 0 ? 'grayscale(1)' : 'none',
+        };
+
+        if (product.image && product.image.trim() !== "") {
+            return (
+                <Image
+                    alt={product.product_name}
+                    src={product.image}
+                    style={commonStyle}
+                    preview={false}
+                    // Nếu link ảnh lỗi (404), fallback sang hình xám
+                    fallback="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mN8+R8AAnkB9X90W7EAAAAASUVORK5CYII="
+                />
+            );
+        }
+
+        // Trả về khối màu xám đại diện khi không có dữ liệu ảnh
+        return (
+            <div style={{
+                ...commonStyle,
+                backgroundColor: '#e8e8e8',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                color: '#bfbfbf'
+            }}>
+                <PictureOutlined style={{ fontSize: 40, marginBottom: 8 }} />
+                <Text type="secondary" style={{ fontSize: 12 }}>No Image</Text>
+            </div>
+        );
+    };
+
     return (
         <div style={{ padding: '24px', backgroundColor: '#f5f5f5', minHeight: '150vh' }}>
             <Row gutter={24} align="start">
+                {/* SIDEBAR DANH MỤC */}
                 <Col xs={24} md={5}>
                     <Card
                         title="Danh mục"
                         style={{
                             border: 'none',
                             boxShadow: 'none',
-                            height: '100%',
-                            minHeight: 'calc(100vh - 100px)',
                             position: 'sticky',
                             top: 24,
                             background: '#fff',
@@ -121,173 +160,92 @@ const ProductList = () => {
                 </Col>
 
                 {/* DANH SÁCH SẢN PHẨM */}
-                <Col xs={24} md={19} style={{ display: 'flex', flexDirection: 'column', minHeight: '80vh' }}>
+                <Col xs={24} md={19}>
                     <Title level={2} style={{ textAlign: 'center', marginBottom: 32 }}>
                         Danh sách sản phẩm
                     </Title>
 
-                    <div style={{ flexGrow: 1 }}>
-                        <Row gutter={[24, 24]}>
-                            {paginatedProducts.length === 0 ? (
-                                <Col span={24}>
-                                    <div style={{
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        height: '300px'
-                                    }}>
-                                        <Empty description="Không có sản phẩm nào trong danh mục này" />
-                                    </div>
-                                </Col>
-                            ) : (
-                                paginatedProducts.map(product => {
-                                    const finalPrice = parseFloat(product.final_price);
-                                    const originalPrice = parseFloat(product.price_with_additional);
-                                    const isDiscountActive = finalPrice < originalPrice;
+                    <Row gutter={[24, 24]}>
+                        {paginatedProducts.length === 0 ? (
+                            <Col span={24}><Empty description="Không có sản phẩm nào" /></Col>
+                        ) : (
+                            paginatedProducts.map(product => {
+                                const finalPrice = parseFloat(product.final_price);
+                                const originalPrice = parseFloat(product.price_with_additional);
+                                const isDiscountActive = finalPrice < originalPrice;
 
-                                    const formattedFinalPrice = formatCurrency(Number(finalPrice));
-                                    const formattedOldPrice = formatCurrency(Number(originalPrice));
-
-                                    return (
-                                        <Col
-                                            key={product.product_id + '-' + product.size_id}
-                                            xs={24}
-                                            sm={12}
-                                            md={12}
-                                            lg={6}
+                                return (
+                                    <Col key={`${product.product_id}-${product.size_id}`} xs={24} sm={12} lg={6}>
+                                        <Card
+                                            hoverable
+                                            style={{
+                                                position: 'relative',
+                                                overflow: 'hidden',
+                                                backgroundColor: product.is_active === 0 ? '#fafafa' : '#fff',
+                                            }}
+                                            cover={renderProductImage(product)}
+                                            actions={[
+                                                <Button
+                                                    type="primary"
+                                                    icon={<ShoppingCartOutlined />}
+                                                    disabled={product.is_active === 0}
+                                                    onClick={() => handleAddToCart(product)}
+                                                >
+                                                    Thêm giỏ
+                                                </Button>,
+                                                <Button onClick={() => navigate(`/product/${product.product_id}`)}>
+                                                    Chi tiết
+                                                </Button>
+                                            ]}
                                         >
-                                            <Card
-                                                hoverable
-                                                style={{
-                                                    position: 'relative',
-                                                    overflow: 'hidden',
-                                                    backgroundColor: product.is_active === 0 ? '#f0f0f0' : '#fff',
-                                                }}
-                                                cover={
-                                                    product.image ? (
-                                                        <Image
-                                                            alt={product.product_name}
-                                                            src={`${product.image}`}
-                                                            style={{
-                                                                height: 200,
-                                                                objectFit: 'cover',
-                                                                filter: product.is_active === 0 ? 'grayscale(1)' : 'none'
-                                                            }}
-                                                            preview={false}
-                                                        />
-                                                    ) : (
-                                                        <div
-                                                            style={{
-                                                                height: 200,
-                                                                backgroundColor: '#eee',
-                                                                backgroundImage: 'url("/default-image.jpg")',
-                                                                backgroundSize: 'cover',
-                                                                backgroundPosition: 'center',
-                                                                borderRadius: '8px',
-                                                                filter: product.is_active === 0 ? 'grayscale(1)' : 'none',
-                                                            }}
-                                                        />
-                                                    )
-                                                }
-                                                actions={[
-                                                    <Button
-                                                        type="primary"
-                                                        icon={<ShoppingCartOutlined />}
-                                                        disabled={product.is_active === 0}
-                                                        onClick={() => handleAddToCart(product)}
-                                                    >
-                                                        Thêm giỏ
-                                                    </Button>,
-                                                    <Button
-                                                        type="default"
-                                                        onClick={() => navigate(`/product/${product.product_id}`)}
-                                                    >
-                                                        Xem chi tiết
-                                                    </Button>
-                                                ]}
-                                            >
-                                                {/* Overlay chữ "Ngừng bán" */}
-                                                {product.is_active === 0 && (
-                                                    <div style={{
-                                                        position: 'absolute',
-                                                        top: 0,
-                                                        left: 0,
-                                                        width: '100%',
-                                                        height: '100%',
-                                                        backgroundColor: 'rgba(255,255,255,0.6)',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        zIndex: 1
-                                                    }}>
-                                                        <Text strong style={{ fontSize: 20, color: 'red' }}>
-                                                            Ngừng bán
-                                                        </Text>
-                                                    </div>
-                                                )}
+                                            {/* Overlay Ngừng bán */}
+                                            {product.is_active === 0 && (
+                                                <div style={{
+                                                    position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                                                    backgroundColor: 'rgba(255,255,255,0.4)', display: 'flex',
+                                                    alignItems: 'center', justifyContent: 'center', zIndex: 1, pointerEvents: 'none'
+                                                }}>
+                                                    <Text strong style={{ fontSize: 18, color: 'red', transform: 'rotate(-15deg)', border: '2px solid red', padding: '4px 8px' }}>
+                                                        HẾT HÀNG
+                                                    </Text>
+                                                </div>
+                                            )}
 
-                                                {/* Nội dung chính */}
-                                                <Meta
-                                                    title={
-                                                        <Text
-                                                            strong
-                                                            style={{
-                                                                display: 'block',
-                                                                fontSize: 14,
-                                                                lineHeight: '1.4',
-                                                                minHeight: 40,
-                                                                overflow: 'hidden',
-                                                                textOverflow: 'ellipsis',
-                                                                display: '-webkit-box',
-                                                                WebkitLineClamp: 2,
-                                                                WebkitBoxOrient: 'vertical',
-                                                                opacity: product.is_active === 0 ? 0.5 : 1
-                                                            }}
-                                                        >
-                                                            {product.product_name}
-                                                        </Text>
-                                                    }
-                                                    description={
-                                                        <div style={{
-                                                            marginTop: 8,
-                                                            opacity: product.is_active === 0 ? 0.5 : 1
-                                                        }}>
-                                                            {isDiscountActive ? (
-                                                                <>
-                                                                    <Text delete type="secondary" style={{ marginRight: 8 }}>
-                                                                        {formattedOldPrice}
-                                                                    </Text>
-                                                                    <Text strong style={{ color: 'red', fontSize: 16 }}>
-                                                                        {formattedFinalPrice}
-                                                                    </Text>
-                                                                </>
-                                                            ) : (
-                                                                <Text strong style={{ color: 'green', fontSize: 16 }}>
-                                                                    {formattedFinalPrice}
+                                            <Meta
+                                                title={<Text strong ellipsis={{ tooltip: product.product_name }}>{product.product_name}</Text>}
+                                                description={
+                                                    <div style={{ marginTop: 8 }}>
+                                                        {isDiscountActive ? (
+                                                            <>
+                                                                <Text delete type="secondary" style={{ fontSize: 12, marginRight: 4 }}>
+                                                                    {formatCurrency(originalPrice)}
                                                                 </Text>
-                                                            )}
-                                                        </div>
-                                                    }
-                                                />
-                                            </Card>
-                                        </Col>
-                                    );
-                                })
-                            )}
-                        </Row>
-                    </div>
+                                                                <Text strong style={{ color: '#ff4d4f', fontSize: 15 }}>
+                                                                    {formatCurrency(finalPrice)}
+                                                                </Text>
+                                                            </>
+                                                        ) : (
+                                                            <Text strong style={{ color: '#52c41a', fontSize: 15 }}>
+                                                                {formatCurrency(finalPrice)}
+                                                            </Text>
+                                                        )}
+                                                    </div>
+                                                }
+                                            />
+                                        </Card>
+                                    </Col>
+                                );
+                            })
+                        )}
+                    </Row>
 
-                    {selectedCategory === 'all' && (
-                        <div style={{
-                            marginTop: 32,
-                            display: 'flex',
-                            justifyContent: 'flex-end'
-                        }}>
+                    {selectedCategory === 'all' && filteredProducts.length > pageSize && (
+                        <div style={{ marginTop: 32, display: 'flex', justifyContent: 'center' }}>
                             <Pagination
                                 current={currentPage}
                                 pageSize={pageSize}
                                 total={filteredProducts.length}
-                                onChange={(page) => setCurrentPage(page)}
+                                onChange={setCurrentPage}
                                 showSizeChanger={false}
                             />
                         </div>

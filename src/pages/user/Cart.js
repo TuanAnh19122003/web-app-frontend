@@ -9,7 +9,6 @@ import { useNavigate } from 'react-router-dom';
 const { Title, Text } = Typography;
 const API_URL = process.env.REACT_APP_API_URL;
 
-
 const CartPage = () => {
     const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -19,56 +18,48 @@ const CartPage = () => {
     const navigate = useNavigate();
 
     const fetchCart = async () => {
-        if (!userId) {
-            message.warning('Bạn cần đăng nhập để xem giỏ hàng');
-            return;
-        }
-
+        if (!userId) return;
         setLoading(true);
         try {
             const res = await axios.get(`${API_URL}/carts/${userId}`);
-
-            const items = Array.isArray(res.data?.data?.items)
-                ? res.data.data.items
-                : [];
-
+            const items = res.data?.data?.items || [];
             setCartItems(items);
             fetchCartCount();
-
-            console.log('Cart items:', items);
         } catch (err) {
             message.error('Không thể tải giỏ hàng');
-            setCartItems([]);
         } finally {
             setLoading(false);
         }
     };
 
-    useEffect(() => {
-        fetchCart();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useEffect(() => { fetchCart(); }, []);
 
     const handleQuantityChange = async (value, cartItemId) => {
+        if (!value || value < 1) return;
+
+        // Lưu bản cũ để đề phòng lỗi thì rollback
+        const previousItems = [...cartItems];
+
+        // Cập nhật UI ngay lập tức (Chống nhảy dòng)
+        setCartItems(prev => prev.map(item =>
+            item.id === cartItemId ? { ...item, quantity: value } : item
+        ));
+
         try {
-            await axios.put(`${API_URL}/api/carts/update`, {
-                cartItemId,
-                quantity: value
-            });
-            message.success('Đã cập nhật số lượng');
-            fetchCart();
-        } catch {
-            message.error('Lỗi khi cập nhật số lượng');
+            await axios.put(`${API_URL}/carts/update`, { cartItemId, quantity: value });
+            fetchCartCount(); // Chỉ cập nhật số tổng trên Header
+        } catch (err) {
+            message.error('Lỗi cập nhật số lượng');
+            setCartItems(previousItems); // Rollback nếu lỗi server
         }
     };
 
     const handleRemove = async (cartItemId) => {
         try {
-            await axios.delete(`${API_URL}/api/carts/remove`, {
-                data: { cartItemId }
-            });
+            await axios.delete(`${API_URL}/carts/remove`, { data: { cartItemId } });
             message.success('Đã xóa sản phẩm');
-            fetchCart();
+            fetchCart(); // Load lại toàn bộ sau khi xóa
         } catch {
             message.error('Lỗi khi xóa sản phẩm');
         }
@@ -77,18 +68,11 @@ const CartPage = () => {
     const columns = [
         {
             title: 'Sản phẩm',
-            dataIndex: 'product',
-            render: (product, record) => (
+            render: (_, record) => (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                    <Image
-                        src={`${product.image}`}
-                        alt={product.name}
-                        width={60}
-                        height={60}
-                        style={{ objectFit: 'cover', borderRadius: 4 }}
-                    />
+                    <Image src={record.product?.image} width={60} height={60} style={{ objectFit: 'cover' }} />
                     <div>
-                        <Text strong>{product.name}</Text>
+                        <Text strong>{record.product?.name}</Text>
                         <div><Text type="secondary">Size: {record.size?.name || 'N/A'}</Text></div>
                     </div>
                 </div>
@@ -101,13 +85,12 @@ const CartPage = () => {
         },
         {
             title: 'Số lượng',
-            dataIndex: 'quantity',
-            render: (quantity, record) => (
+            render: (_, record) => (
                 <InputNumber
                     min={1}
                     max={99}
-                    value={quantity}
-                    onChange={(value) => handleQuantityChange(value, record.id)}
+                    value={record.quantity}
+                    onChange={(val) => handleQuantityChange(val, record.id)}
                 />
             )
         },
@@ -116,49 +99,33 @@ const CartPage = () => {
             render: (_, record) => formatCurrency(record.price * record.quantity)
         },
         {
-            title: '',
+            title: 'Hành động',
             render: (_, record) => (
-                <Popconfirm
-                    title="Bạn có chắc muốn xóa sản phẩm này?"
-                    onConfirm={() => handleRemove(record.id)}
-                    okText="Xóa"
-                    cancelText="Hủy"
-                >
+                <Popconfirm title="Xóa sản phẩm này?" onConfirm={() => handleRemove(record.id)}>
                     <Button danger icon={<DeleteOutlined />} />
                 </Popconfirm>
             )
         }
     ];
 
-    const totalAmount = (cartItems ?? []).reduce(
-        (sum, item) => sum + Number(item.price) * item.quantity,
-        0
-    );
-
+    const totalAmount = cartItems.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0);
 
     return (
         <div style={{ padding: 24 }}>
             <Title level={2}>Giỏ hàng của bạn</Title>
-
-            {cartItems.length === 0 ? (
-                <Empty description="Giỏ hàng trống" />
-            ) : (
+            {cartItems.length === 0 ? <Empty description="Giỏ hàng trống" /> : (
                 <>
                     <Table
                         dataSource={cartItems}
                         columns={columns}
-                        rowKey="id"
+                        // rowKey cực kỳ quan trọng: Phải dùng ID duy nhất của dòng
+                        rowKey={(record) => `cart-item-${record.id}`}
                         loading={loading}
                         pagination={false}
                     />
                     <div style={{ marginTop: 24, textAlign: 'right' }}>
                         <Title level={4}>Tổng cộng: {formatCurrency(totalAmount)}</Title>
-                        <Button
-                            type="primary"
-                            size="large"
-                            style={{ marginTop: 8 }}
-                            onClick={() => navigate('/order')}
-                        >
+                        <Button type="primary" size="large" onClick={() => navigate('/order')}>
                             Tiến hành đặt hàng
                         </Button>
                     </div>

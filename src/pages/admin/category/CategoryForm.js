@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Input, Button, Space } from 'antd';
-import { CheckOutlined, CloseOutlined, EyeOutlined } from '@ant-design/icons';
+import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 
 const CategoryForm = ({ initialValues, onSubmit, onCancel }) => {
     const [form] = Form.useForm();

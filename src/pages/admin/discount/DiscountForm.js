@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Input, Button, Space, InputNumber, DatePicker } from 'antd';
-import { CheckOutlined, CloseOutlined, EyeOutlined } from '@ant-design/icons';
+import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 
 const DiscountForm = ({ initialValues, onSubmit, onCancel }) => {
